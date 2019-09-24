@@ -1,0 +1,28 @@
+version: "3.4"
+services:
+  win-start:
+    image: nicholascus/docker-jump-start:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - source_volume:/project:nocopy
+      - ssh_keys:/root/.ssh
+      - /var/run/docker.sock:/var/run/docker.sock
+  sshd:
+    image: docker.io/panubo/sshd:1.0.3
+    ports:
+      - ${SSH_PORT:-2222}:22
+    volumes:
+      - source_volume:/data
+      - sshd_ssh_keys:/root/.ssh
+    environment:
+      - SSH_ENABLE_ROOT=true  
+volumes:
+  source_volume:
+    external: true
+    name: ${CODE_VOLUME:-source_volume}
+  ssh_keys:
+    external: true
+  sshd_ssh_keys:
+    external: true
